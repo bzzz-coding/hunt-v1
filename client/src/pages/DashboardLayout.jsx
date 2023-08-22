@@ -5,12 +5,11 @@ import {
   useNavigate,
   useNavigation,
 } from "react-router-dom";
-import { Navbar, BigSidebar, SmallSidebar } from "../components";
+import { Navbar, BigSidebar, SmallSidebar, Loading } from "../components";
 import Wrapper from "../assets/wrappers/Dashboard";
 import { useState, createContext, useContext } from "react";
 import customFetch from "../utils/customFetch";
 import { toast } from "react-toastify";
-import Loading from "../components/Loading";
 
 export const loader = async () => {
   try {

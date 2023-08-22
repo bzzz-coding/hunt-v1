@@ -20,6 +20,7 @@ export const updateUser = async (req, res) => {
 
   if (req.file) {
     const file = formatImage(req.file);
+    // https://cloudinary.com/documentation/image_upload_api_reference#upload_examples
     const response = await cloudinary.v2.uploader.upload(file);
     newUser.avatar = response.secure_url;
     newUser.avatarId = response.public_id;
@@ -27,7 +28,7 @@ export const updateUser = async (req, res) => {
   const updatedUser = await User.findByIdAndUpdate(req.user.userId, newUser);
 
   if (req.file && updatedUser.avatarId) {
-    console.log(updatedUser.avatarId);
+    // console.log(updatedUser.avatarId);
     await cloudinary.v2.uploader.destroy(updatedUser.avatarId);
   }
 
