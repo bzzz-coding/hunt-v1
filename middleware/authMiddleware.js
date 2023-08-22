@@ -34,7 +34,7 @@ export const authenticateUser = (req, res, next) => {
 };
 
 export const authorizePermission = (req, res, next) => {
-  console.log(req.user?.role);
+  // console.log(req.user?.role);
   if (req.user?.role !== "admin") {
     throw new UnauthorizedError("unauthorized user");
   }
@@ -45,4 +45,5 @@ export const checkForTestUser = (req, res, next) => {
   if (req.user.testUser) {
     throw new BadRequestError("Test user, read only.");
   }
+  next();
 };

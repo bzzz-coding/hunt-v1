@@ -8,6 +8,7 @@ import { JOB_STATUS, JOB_TYPES } from "../utils/constants.js";
 import mongoose from "mongoose";
 import Job from "../models/jobModel.js";
 import User from "../models/userModel.js";
+import { LogError } from "concurrently";
 
 const withValidationErrors = (validateValues) => {
   return [
@@ -65,7 +66,7 @@ export const validateIdParam = withValidationErrors([
     if (!job) {
       throw new Error(`no job with id ${value} is found`);
     }
-    console.log(req.user);
+    // console.log(req.user);
     const { userId, role } = req.user;
     if (job.createdBy.toString() !== userId && role !== "admin") {
       throw new Error("not authorized to access this job");

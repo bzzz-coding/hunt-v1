@@ -5,7 +5,7 @@ import PageBtnContainer from "./PageBtnContainer";
 
 const JobsContainer = () => {
   const { data } = useAllJobsContext();
-  console.log(data);
+  // console.log(data);
 
   const { jobs, totalJobs, totalPages, currentPage } = data;
 
