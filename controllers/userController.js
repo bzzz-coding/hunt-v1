@@ -22,12 +22,13 @@ export const updateUser = async (req, res) => {
     const file = formatImage(req.file);
     const response = await cloudinary.v2.uploader.upload(file);
     newUser.avatar = response.secure_url;
-    newUser.avatarPublicId = response.public_id;
+    newUser.avatarId = response.public_id;
   }
   const updatedUser = await User.findByIdAndUpdate(req.user.userId, newUser);
 
-  if (req.file && updatedUser.avatarPublicId) {
-    await cloudinary.v2.uploader.destroy(updatedUser.avatarPublicId);
+  if (req.file && updatedUser.avatarId) {
+    console.log(updatedUser.avatarId);
+    await cloudinary.v2.uploader.destroy(updatedUser.avatarId);
   }
 
   res.status(StatusCodes.OK).json({ msg: "updated user" });
