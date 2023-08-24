@@ -19,6 +19,8 @@ import { fileURLToPath } from "url";
 import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cloudinary from "cloudinary";
+import helmet from "helmet";
+import mongoSanitize from "express-mongo-sanitize";
 import errorHandlerMiddleware from "./middleware/errorHandlerMiddleware.js";
 import { authenticateUser } from "./middleware/authMiddleware.js";
 
@@ -38,20 +40,22 @@ cloudinary.config({
 const __dirname = dirname(fileURLToPath(import.meta.url));
 app.use(express.static(path.resolve(__dirname, "./client/dist"))); // express.static() is a built-in middleware
 
-// Evoke cookieParser
 app.use(cookieParser());
-// Evoke built-in middleware json
+// Built-in middleware json
 app.use(express.json());
+// Security
+app.use(helmet());
+app.use(mongoSanitize());
 
-// API
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
+// // API
+// app.get("/", (req, res) => {
+//   res.send("Hello World");
+// });
 
-// Test API
-app.get("/api/v1/test", (req, res) => {
-  res.json({ msg: "test route" });
-});
+// // Test API
+// app.get("/api/v1/test", (req, res) => {
+//   res.json({ msg: "test route" });
+// });
 
 // Insert express-validator between route and controller
 app.post("/api/v1/test", (req, res) => {
