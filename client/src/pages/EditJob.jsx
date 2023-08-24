@@ -5,44 +5,73 @@ import { JOB_STATUS, JOB_TYPES } from "../../../utils/constants";
 import { Form, useNavigation, redirect } from "react-router-dom";
 import { toast } from "react-toastify";
 import customFetch from "../utils/customFetch";
+import { useQuery } from "@tanstack/react-query";
 
-export const loader = async ({ params }) => {
-  // console.log(params);
-  try {
-    const { data } = await customFetch.get(`/jobs/${params.id}`);
-    // console.log(data);
-    return data;
-  } catch (error) {
-    toast.error(error?.response?.data?.msg, {
-      icon: "🫥",
-      autoClose: 1000,
-    });
-    return redirect("/dashboard/all-jobs");
-  }
+const currentJobQuery = (id) => {
+  return {
+    queryKey: ["job", id],
+    queryFn: async () => {
+      const { data } = await customFetch.get(`/jobs/${id}`);
+      console.log(data);
+      return data;
+    },
+  };
 };
 
-export const action = async ({ request, params }) => {
-  const formData = await request.formData();
-  const data = Object.fromEntries(formData);
-  try {
-    await customFetch.patch(`/jobs/${params.id}`, data);
-    toast.success("job updated", {
-      icon: "💪",
-      autoClose: 1000,
-    });
-    return redirect("/dashboard/all-jobs");
-  } catch (error) {
-    toast.error(error?.response?.data?.msg, {
-      icon: "😮‍💨",
-      autoClose: 3000,
-    });
-    return error;
-  }
-};
+export const loader =
+  (queryClient) =>
+  async ({ params }) => {
+    // console.log(params);
+    try {
+      // const { data } = await customFetch.get(`/jobs/${params.id}`);
+      // console.log(data);
+      const { id } = params;
+      await queryClient.ensureQueryData(currentJobQuery(id));
+      return id;
+    } catch (error) {
+      toast.error(error?.response?.data?.msg, {
+        icon: "🫥",
+        autoClose: 1000,
+      });
+      return redirect("/dashboard/all-jobs");
+    }
+  };
+
+export const action =
+  (queryClient) =>
+  async ({ request, params }) => {
+    const formData = await request.formData();
+    const data = Object.fromEntries(formData);
+
+    try {
+      await customFetch.patch(`/jobs/${params.id}`, data);
+      queryClient.invalidateQueries(["jobs"]);
+      queryClient.invalidateQueries(["job"]);
+      toast.success("job updated", {
+        icon: "💪",
+        autoClose: 1000,
+      });
+      return redirect("/dashboard/all-jobs");
+    } catch (error) {
+      toast.error(error?.response?.data?.msg, {
+        icon: "😮‍💨",
+        autoClose: 3000,
+      });
+      return error;
+    }
+  };
 
 const EditJob = () => {
-  const { job } = useLoaderData();
+  // const { job } = useLoaderData();
   // console.log(job);
+  // const { company, position, jobLocation, jobStatus, jobType } = job;
+  const id = useLoaderData();
+
+  // console.log(useQuery(currentJobQuery(id)));
+  const {
+    data: { job },
+  } = useQuery(currentJobQuery(id));
+  console.log(job);
   const { company, position, jobLocation, jobStatus, jobType } = job;
 
   const navigation = useNavigation();
